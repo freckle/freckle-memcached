@@ -74,8 +74,8 @@ instance HasTracer App where
 loadApp :: (App -> IO a) -> IO a
 loadApp f = do
   servers <-
-    Env.parse id $
-      Env.var
+    Env.parse id
+      $ Env.var
         (Env.eitherReader readMemcachedServers)
         "MEMCACHED_SERVERS"
         (Env.def defaultMemcachedServers)

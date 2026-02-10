@@ -53,7 +53,8 @@ memcachedClientDisabled :: MemcachedClient
 memcachedClientDisabled = MemcachedClientDisabled
 
 get
-  :: (MonadUnliftIO m, MonadTracer m, MonadReader env m, HasMemcachedClient env)
+  :: forall m env
+   . (HasMemcachedClient env, MonadReader env m, MonadTracer m, MonadUnliftIO m)
   => CacheKey
   -> m (Maybe Value)
 get k = traced $ with $ \case
@@ -76,18 +77,19 @@ get k = traced $ with $ \case
 --
 -- Pass @0@ to set a value that never expires.
 set
-  :: (MonadUnliftIO m, MonadTracer m, MonadReader env m, HasMemcachedClient env)
+  :: forall m env
+   . (HasMemcachedClient env, MonadReader env m, MonadTracer m, MonadUnliftIO m)
   => CacheKey
   -> Value
   -> CacheTTL
   -> m ()
 set k v expiration = traced $ with $ \case
   MemcachedClient mc ->
-    void $
-      liftIO $
-        Memcache.set mc (fromCacheKey k) v 0 $
-          fromCacheTTL
-            expiration
+    void
+      $ liftIO
+      $ Memcache.set mc (fromCacheKey k) v 0
+      $ fromCacheTTL
+        expiration
   MemcachedClientDisabled -> pure ()
  where
   traced =
@@ -106,7 +108,8 @@ set k v expiration = traced $ with $ \case
 
 -- | Delete a key
 delete
-  :: (MonadUnliftIO m, MonadTracer m, MonadReader env m, HasMemcachedClient env)
+  :: forall m env
+   . (HasMemcachedClient env, MonadReader env m, MonadTracer m, MonadUnliftIO m)
   => CacheKey
   -> m ()
 delete k = traced $ with $ \case
@@ -127,7 +130,8 @@ quitClient = \case
   MemcachedClientDisabled -> pure ()
 
 with
-  :: (MonadReader env m, HasMemcachedClient env)
+  :: forall env m a
+   . (HasMemcachedClient env, MonadReader env m)
   => (MemcachedClient -> m a)
   -> m a
 with f = do

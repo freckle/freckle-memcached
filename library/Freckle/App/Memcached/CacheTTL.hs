@@ -14,7 +14,7 @@ import OpenTelemetry.Trace (ToAttribute (..))
 
 newtype CacheTTL = CacheTTL Int
   deriving stock (Show)
-  deriving newtype (Eq, Ord, Enum, Num, Real, Integral, Serialise)
+  deriving newtype (Enum, Eq, Integral, Num, Ord, Real, Serialise)
 
 instance ToAttribute CacheTTL where
   toAttribute (CacheTTL x) = toAttribute x

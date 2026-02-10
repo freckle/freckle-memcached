@@ -31,11 +31,11 @@ newtype AppExample app a = AppExample
     , Functor
     , Monad
     , MonadCatch
+    , MonadFail
     , MonadIO
-    , MonadUnliftIO
     , MonadReader app
     , MonadThrow
-    , MonadFail
+    , MonadUnliftIO
     )
   deriving
     (MonadLogger, MonadLoggerIO)

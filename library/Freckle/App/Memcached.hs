@@ -78,10 +78,11 @@ instance Exception CachingError where
     CacheDeserializeError err -> "Unable to deserialize: " <> err
 
 -- | Log any thrown 'CachingError's as warnings and return the given value
-warnOnCachingError :: (MonadUnliftIO m, MonadLogger m) => a -> m a -> m a
+warnOnCachingError
+  :: forall m a. (MonadLogger m, MonadUnliftIO m) => a -> m a -> m a
 warnOnCachingError val =
-  flip catch $
-    (val <$)
+  flip catch
+    $ (val <$)
       . logWarnNS "caching"
       . annotatedExceptionMessage @CachingError
 
@@ -103,13 +104,14 @@ annotatedExceptionMessageFrom f ann = case f ex of
 
 -- | Memoize an action using Memcached and 'Cachable'
 caching
-  :: ( MonadUnliftIO m
-     , MonadLogger m
-     , MonadTracer m
-     , MonadReader env m
-     , HasMemcachedClient env
-     , Cachable a
+  :: forall m env a
+   . ( Cachable a
      , HasCallStack
+     , HasMemcachedClient env
+     , MonadLogger m
+     , MonadReader env m
+     , MonadTracer m
+     , MonadUnliftIO m
      )
   => CacheKey
   -> CacheTTL
@@ -119,12 +121,13 @@ caching = cachingAs fromCachable toCachable
 
 -- | Like 'caching', but with explicit conversion functions
 cachingAs
-  :: ( MonadUnliftIO m
-     , MonadLogger m
-     , MonadTracer m
-     , MonadReader env m
+  :: forall m env a
+   . ( HasCallStack
      , HasMemcachedClient env
-     , HasCallStack
+     , MonadLogger m
+     , MonadReader env m
+     , MonadTracer m
+     , MonadUnliftIO m
      )
   => (ByteString -> Either String a)
   -> (a -> ByteString)
@@ -147,14 +150,15 @@ cachingAs from to key ttl f = do
 
 -- | Like 'caching', but de/serializing the value as JSON
 cachingAsJSON
-  :: ( MonadUnliftIO m
-     , MonadLogger m
-     , MonadTracer m
-     , MonadReader env m
-     , HasMemcachedClient env
-     , FromJSON a
-     , ToJSON a
+  :: forall m env a
+   . ( FromJSON a
      , HasCallStack
+     , HasMemcachedClient env
+     , MonadLogger m
+     , MonadReader env m
+     , MonadTracer m
+     , MonadUnliftIO m
+     , ToJSON a
      )
   => CacheKey
   -> CacheTTL
@@ -164,13 +168,14 @@ cachingAsJSON = cachingAs eitherDecodeStrict encodeStrict
 
 -- | Cache data in memcached in CBOR format
 cachingAsCBOR
-  :: ( MonadUnliftIO m
-     , MonadLogger m
-     , MonadTracer m
-     , MonadReader env m
+  :: forall m env a
+   . ( HasCallStack
      , HasMemcachedClient env
+     , MonadLogger m
+     , MonadReader env m
+     , MonadTracer m
+     , MonadUnliftIO m
      , Serialise a
-     , HasCallStack
      )
   => CacheKey
   -> CacheTTL
