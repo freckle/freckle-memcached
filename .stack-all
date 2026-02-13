@@ -1,2 +1,3 @@
 [versions]
-oldest = lts-12
+oldest = lts-20
+newest = lts-24
