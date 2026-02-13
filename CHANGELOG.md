@@ -1,4 +1,8 @@
-## [_Unreleased_](https://github.com/freckle/freckle-memcached/compare/v0.0.0.2...main)
+## [_Unreleased_](https://github.com/freckle/freckle-memcached/compare/v0.0.0.3...main)
+
+## [v0.0.0.3](https://github.com/freckle/freckle-memcached/compare/v0.0.0.2...v0.0.0.3)
+
+Metadata-only changes to update the package's source repository location.
 
 ## [v0.0.0.2](https://github.com/freckle/freckle-app/compare/freckle-memcached-v0.0.0.1...freckle-memcached-v0.0.0.2)
 
